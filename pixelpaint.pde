@@ -3,7 +3,11 @@
 
    Modifications made by James Britt <james@neurogami.com>
 
-   Sun Mar 17 11:43:21 MST 2013
+   Tue Mar 19 09:36:04 MST 2013
+ * Saving the image hides the cursor
+
+
+ Sun Mar 17 11:43:21 MST 2013
  * Changed navigation keys to match those used by vi
  * Added a method to save only the artwork section for the frame, excluding the palette.
  * Added the use of the space-bar to repeat the last-used color
@@ -41,9 +45,7 @@ PFont font;
 
 // Assumes it it loading a text file that has list of hex color values, one on each line
 void loadPalette(String paletteFilePath) {
-
   String lines[] = loadStrings(paletteFilePath);
-
   for (int i = 0 ; i < lines.length; i++) {
     int c = unhex("FF" + trim(lines[i]));
     colors[i] = color(c);
@@ -60,7 +62,6 @@ void fileSelected(File selection) {
   } else {
     println("User selected " + selection.getAbsolutePath());
   }
-
   loadPalette(selection.getAbsolutePath());
 }
 
@@ -73,17 +74,17 @@ void saveImage() {
   restoreCursor();
 }
 
-void  restoreCursor(){
-   drawCursor();
+void restoreCursor(){
+  drawCursor();
 }
 
 
-void  hideCursor(){
+void hideCursor(){
 
   drawTools();
   img.loadPixels(); 
   drawArtwork();
-  
+
 
 }
 
@@ -161,9 +162,6 @@ void keyPressed() {
     cur_x = (cur_x + img.width) % img.width;
   } 
 
-
-
-  ////////////////////////////////////////////////
   img.loadPixels(); 
 
   int ind = cur_y * img.width + cur_x;
@@ -200,8 +198,6 @@ void keyPressed() {
 
 void draw() {
   background(32);
-
-
   drawTools();
   img.loadPixels(); 
   drawArtwork();
@@ -209,7 +205,7 @@ void draw() {
 }
 
 void drawArtwork(){
-int rwd = cwd / img.width;
+  int rwd = cwd / img.width;
   int rht = cht / img.height;
 
   for (int j = 0; j < img.height; j++) {
@@ -220,9 +216,7 @@ int rwd = cwd / img.width;
       fill(img.pixels[ind]);
       rect(i * rwd , j * rht , rwd, rht);
     }
-
   }
-
 }
 
 void drawTools(){
@@ -242,9 +236,8 @@ void drawTools(){
     textSize(32);
     text(keys[i], x + rwd/2, y + rht*3+4);   
   }
-
-
 }
+
 void drawCursor(){
   int rwd = cwd / img.width;
   int rht = cht / img.height;
@@ -253,6 +246,4 @@ void drawCursor(){
   strokeWeight(2);
   fill(255); 
   rect(cur_x * rwd + rwd/4, cur_y * rht + rht/4, rwd/2, rht/2);
-
-
 }
