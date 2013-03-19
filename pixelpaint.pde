@@ -25,7 +25,6 @@
  */
 
 PImage img;
-BufferedReader reader;
 
 int cur_x;
 int cur_y;
@@ -40,23 +39,16 @@ char[] keys = new char[16];
 
 PFont font;
 
-
+// Assumes it it loading a text file that has list of hex color values, one on each line
 void loadPalette(String paletteFilePath) {
-  // Assumes it it loading a text file that has list of hex color values.
-  //http://processing.org/reference/BufferedReader.html
 
-  reader = createReader(paletteFilePath);
+  String lines[] = loadStrings(paletteFilePath);
 
-String lines[] = loadStrings(paletteFilePath);
-
-for (int i = 0 ; i < lines.length; i++) {
-//  println(lines[i]);
-   int c = unhex("FF" + trim(lines[i]));
+  for (int i = 0 ; i < lines.length; i++) {
+    int c = unhex("FF" + trim(lines[i]));
     colors[i] = color(c);
     println("Updated color at " + i + " with hex value '" + trim(lines[i]) + "'" );
-}
-
-  
+  }
 }
 
 
@@ -73,11 +65,26 @@ void fileSelected(File selection) {
 }
 
 void saveImage() {
-
+  hideCursor();
   PImage partialSave = get(0,0,cwd,cht);
   Date d = new Date();
   long ts = d.getTime();
   partialSave.save("cur-" + ts + ".png");
+  restoreCursor();
+}
+
+void  restoreCursor(){
+   drawCursor();
+}
+
+
+void  hideCursor(){
+
+  drawTools();
+  img.loadPixels(); 
+  drawArtwork();
+  
+
 }
 
 void setup() {
@@ -194,6 +201,31 @@ void keyPressed() {
 void draw() {
   background(32);
 
+
+  drawTools();
+  img.loadPixels(); 
+  drawArtwork();
+  drawCursor();
+}
+
+void drawArtwork(){
+int rwd = cwd / img.width;
+  int rht = cht / img.height;
+
+  for (int j = 0; j < img.height; j++) {
+    for (int i = 0; i < img.width; i++) {
+      int ind = j * img.width + i;
+      //stroke(255);
+      noStroke();
+      fill(img.pixels[ind]);
+      rect(i * rwd , j * rht , rwd, rht);
+    }
+
+  }
+
+}
+
+void drawTools(){
   int rwd = cwd / img.width;
   int rht = cht / img.height;
 
@@ -212,27 +244,15 @@ void draw() {
   }
 
 
-  img.loadPixels(); 
-
-
-
-  for (int j = 0; j < img.height; j++) {
-    for (int i = 0; i < img.width; i++) {
-      int ind = j * img.width + i;
-      //stroke(255);
-
-      noStroke();
-      fill(img.pixels[ind]);
-
-      rect(i * rwd , j * rht , rwd, rht);
-
-    }
-
-  }
+}
+void drawCursor(){
+  int rwd = cwd / img.width;
+  int rht = cht / img.height;
 
   stroke(0);
   strokeWeight(2);
   fill(255); 
   rect(cur_x * rwd + rwd/4, cur_y * rht + rht/4, rwd/2, rht/2);
+
 
 }
